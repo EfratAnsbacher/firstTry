@@ -4,7 +4,6 @@ namespace les3.Models
 {
     public class Donor
     {
-
         [Key]
         public int Id { get; set; }
         [Required]
