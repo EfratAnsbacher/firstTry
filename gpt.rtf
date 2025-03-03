@@ -1,0 +1,629 @@
+{\rtf1\fbidis\ansi\ansicpg1255\deff0\nouicompat\deflang1037{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset177 Calibri;}{\f2\fnil Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.22621}\viewkind4\uc1 
+\pard\rtlpar\sa200\sl276\slmult1\f0\fs22\lang9 Sure! I'll provide you with a complete breakdown of how the project could be implemented, including code examples for the server-side (Web API), client-side (Angular), and how the database will look. I'll also describe what the user will see when they open the site\f1\rtlch\lang1037 .\par
+\par
+### \f0\ltrch\lang9 Full Code Overview\f1\rtlch\lang1037\par
+\par
+#### \f0\ltrch\lang9 1\f1\rtlch\lang1037 . **\f0\ltrch\lang9 Server Side (Web API) \f2\endash  .NET Core\f1\rtlch\lang1037 **\par
+\par
+##### \f2\ltrch\lang9 a) **Entities (Models\f1\rtlch\lang1037 )**\par
+\par
+\f2\ltrch\lang9 These represent the database structure using Entity Framework (EF Core)\f1\rtlch\lang1037 .\par
+\par
+```\f2\ltrch\lang9 csharp\f1\rtlch\lang1037\par
+\f2\ltrch\lang9 public class User\f1\rtlch\lang1037\par
+\{\par
+    \f2\ltrch\lang9 public int UserId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string Username \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string PasswordHash \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string Role \{ get; set; \} // "manager" or "customer\f1\rtlch\lang1037 "\par
+    \f2\ltrch\lang9 public string Email \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string Phone \{ get; set; \}\f1\rtlch\lang1037\par
+\}\par
+\par
+\f2\ltrch\lang9 public class Donor\f1\rtlch\lang1037\par
+\{\par
+    \f2\ltrch\lang9 public int DonorId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string Name \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string Email \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string Phone \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public List<Donation> Donations \{ get; set; \}\f1\rtlch\lang1037\par
+\}\par
+\par
+\f2\ltrch\lang9 public class Donation\f1\rtlch\lang1037\par
+\{\par
+    \f2\ltrch\lang9 public int DonationId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public decimal Amount \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public DateTime Date \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public int DonorId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public Donor Donor \{ get; set; \}\f1\rtlch\lang1037\par
+\}\par
+\par
+\f2\ltrch\lang9 public class Gift\f1\rtlch\lang1037\par
+\{\par
+    \f2\ltrch\lang9 public int GiftId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string Name \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string Category \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public decimal Price \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public int DonorId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public Donor Donor \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public List<Purchase> Purchases \{ get; set; \}\f1\rtlch\lang1037\par
+\}\par
+\par
+\f2\ltrch\lang9 public class Purchase\f1\rtlch\lang1037\par
+\{\par
+    \f2\ltrch\lang9 public int PurchaseId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public int GiftId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public Gift Gift \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public int CustomerId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public User Customer \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public DateTime Date \{ get; set; \}\f1\rtlch\lang1037\par
+\}\par
+\par
+\f2\ltrch\lang9 public class Lottery\f1\rtlch\lang1037\par
+\{\par
+    \f2\ltrch\lang9 public int LotteryId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public int GiftId \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public Gift Gift \{ get; set; \}\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public string Winner \{ get; set; \}  // Winner's name\f1\rtlch\lang1037\par
+    \f2\ltrch\lang9 public DateTime DrawDate \{ get; set; \}\f1\rtlch\lang1037\par
+\}\par
+```\par
+\par
+##### \f2\ltrch\lang9 b) **Authentication and JWT Implementation\f1\rtlch\lang1037 **\par
+\par
+\f2\ltrch\lang9 To handle user authentication and role-based authorization, we will use JWT tokens\f1\rtlch\lang1037 .\par
+\par
+\f2\ltrch\lang9 1\f1\rtlch\lang1037 . **\f2\ltrch\lang9 AuthController\f1\rtlch\lang1037 :**\par
+\par
+```\f2\ltrch\lang9 csharp\f1\rtlch\lang1037\par
+[\f2\ltrch\lang9 Route("api/auth")\f1\rtlch\lang1037 ]\par
+[\f2\ltrch\lang9 ApiController\f1\rtlch\lang1037 ]\par
+\f2\ltrch\lang9 public class AuthController : ControllerBase\f1\rtlch\lang1037\par
+\{\par
+    \f2\ltrch\lang9 private readonly UserManager<User> _userManager\f1\rtlch\lang1037 ;\par
+    \f2\ltrch\lang9 private readonly SignInManager<User> _signInManager\f1\rtlch\lang1037 ;\par
+    \f2\ltrch\lang9 private readonly IConfiguration _configuration\f1\rtlch\lang1037 ;\par
+\par
+    \f2\ltrch\lang9 public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)\f1\rtlch\lang1037\par
+    \{\par
+        _\f2\ltrch\lang9 userManager = userManager\f1\rtlch\lang1037 ;\par
+        _\f2\ltrch\lang9 signInManager = signInManager\f1\rtlch\lang1037 ;\par
+        _\f2\ltrch\lang9 configuration = configuration\f1\rtlch\lang1037 ;\par
+    \}\par
+\par
+    [\f2\ltrch\lang9 HttpPost("login")\f1\rtlch\lang1037 ]\par
+    \f2\ltrch\lang9 public async Task<IActionResult> Login([FromBody] LoginDto loginDto)\f1\rtlch\lang1037\par
+    \{\par
+        \f2\ltrch\lang9 var user = await _userManager.FindByNameAsync(loginDto.Username)\f1\rtlch\lang1037 ;\par
+        \f2\ltrch\lang9 if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))\f1\rtlch\lang1037\par
+        \{\par
+            \f2\ltrch\lang9 return Unauthorized\f1\rtlch\lang1037 ();\par
+        \}\par
+\par
+        \f2\ltrch\lang9 var token = GenerateJwtToken(user)\f1\rtlch\lang1037 ;\par
+        \f2\ltrch\lang9 return Ok(new \{ Token = token \})\f1\rtlch\lang1037 ;\par
+    \}\par
+\par
+    \f2\ltrch\lang9 private string GenerateJwtToken(User user)\f1\rtlch\lang1037\par
+    \{\par
+        \f2\ltrch\lang9 var claims = new\f1\rtlch\lang1037 []\par
+        \{\par
+            \f2\ltrch\lang9 new Claim(ClaimTypes.Name, user.UserName)\f1\rtlch\lang1037 ,\par
+            \f2\ltrch\lang9 new Claim(ClaimTypes.Role, user.Role)\f1\rtlch\lang1037\par
+        \};\par
+\par
+        \f2\ltrch\lang9 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]))\f1\rtlch\lang1037 ;\par
+        \f2\ltrch\lang9 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256)\f1\rtlch\lang1037 ;\par
+        \f2\ltrch\lang9 var expiration = DateTime.UtcNow.AddHours\f1\rtlch\lang1037 (\f2\ltrch\lang9 1\f1\rtlch\lang1037 );\par
+\par
+        \f2\ltrch\lang9 var token = new JwtSecurityToken\f1\rtlch\lang1037 (\par
+            \f2\ltrch\lang9 issuer: _configuration["Jwt:Issuer"]\f1\rtlch\lang1037 ,\par
+            \f2\ltrch\lang9 audience: _configuration["Jwt:Audience"]\f1\rtlch\lang1037 ,\par
+            \f2\ltrch\lang9 claims: claims\f1\rtlch\lang1037 ,\par
+            \f2\ltrch\lang9 expires: expiration\f1\rtlch\lang1037 ,\par
+            \f2\ltrch\lang9 signingCredentials: creds\f1\rtlch\lang1037 );\par
+\par
+        \f2\ltrch\lang9 return new JwtSecurityTokenHandler().WriteToken(token)\f1\rtlch\lang1037 ;\par
+    \}\par
+\}\par
+```\par
+\par
+\f2\ltrch\lang9 2\f1\rtlch\lang1037 . **\f2\ltrch\lang9 JWT Authentication Middleware\f1\rtlch\lang1037 :**\par
+\par
+```\f2\ltrch\lang9 csharp\f1\rtlch\lang1037\par
+\f2\ltrch\lang9 public class JwtMiddleware\f1\rtlch\lang1037\par
+\{\par
+    \f2\ltrch\lang9 private readonly RequestDelegate _next\f1\rtlch\lang1037 ;\par
+    \f2\ltrch\lang9 private readonly IConfiguration _configuration\f1\rtlch\lang1037 ;\par
+\par
+    \f2\ltrch\lang9 public JwtMiddleware(RequestDelegate next, IConfiguration configuration)\f1\rtlch\lang1037\par
+    \{\par
+        _\f2\ltrch\lang9 next = next\f1\rtlch\lang1037 ;\par
+        _\f2\ltrch\lang9 configuration = configuration\f1\rtlch\lang1037 ;\par
+    \}\par
+\par
+    \f2\ltrch\lang9 public async Task InvokeAsync(HttpContext context)\f1\rtlch\lang1037\par
+    \{\par
+        \f2\ltrch\lang9 var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last\f1\rtlch\lang1037 ();\par
+\par
+        \f2\ltrch\lang9 if (token != null)\f1\rtlch\lang1037\par
+        \{\par
+            \f2\ltrch\lang9 var principal = ValidateToken(token)\f1\rtlch\lang1037 ;\par
+            \f2\ltrch\lang9 if (principal != null)\f1\rtlch\lang1037\par
+            \{\par
+                \f2\ltrch\lang9 context.User = principal\f1\rtlch\lang1037 ;\par
+            \}\par
+        \}\par
+\par
+        \f2\ltrch\lang9 await _next(context)\f1\rtlch\lang1037 ;\par
+    \}\par
+\par
+    \f2\ltrch\lang9 private ClaimsPrincipal ValidateToken(string token)\f1\rtlch\lang1037\par
+    \{\par
+        \f2\ltrch\lang9 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]))\f1\rtlch\lang1037 ;\par
+        \f2\ltrch\lang9 var handler = new JwtSecurityTokenHandler\f1\rtlch\lang1037 ();\par
+        \f2\ltrch\lang9 try\f1\rtlch\lang1037\par
+        \{\par
+            \f2\ltrch\lang9 var jsonToken = handler.ReadToken(token) as JwtSecurityToken\f1\rtlch\lang1037 ;\par
+            \f2\ltrch\lang9 var claims = jsonToken?.Claims\f1\rtlch\lang1037 ;\par
+            \f2\ltrch\lang9 var principal = new ClaimsPrincipal(new ClaimsIdentity(claims))\f1\rtlch\lang1037 ;\par
+            \f2\ltrch\lang9 return principal\f1\rtlch\lang1037 ;\par
+        \}\par
+        \f2\ltrch\lang9 catch\f1\rtlch\lang1037\par
+        \{\par
+            \f2\ltrch\lang9 return null\f1\rtlch\lang1037 ;\par
+        \}\par
+    \}\par
+\}\par
+```\par
+\par
+##### \f2\ltrch\lang9 c) **Controllers\f1\rtlch\lang1037 **\par
+\par
+\f2\ltrch\lang9 For example, managing donations and gifts\f1\rtlch\lang1037 :\par
+\par
+```\f2\ltrch\lang9 csharp\f1\rtlch\lang1037\par
+[\f2\ltrch\lang9 Authorize(Roles = "manager")\f1\rtlch\lang1037 ]\par
+[\f2\ltrch\lang9 Route("api/donors")\f1\rtlch\lang1037 ]\par
+[\f2\ltrch\lang9 ApiController\f1\rtlch\lang1037 ]\par
+\f2\ltrch\lang9 public class DonorController : ControllerBase\f1\rtlch\lang1037\par
+\{\par
+    \f2\ltrch\lang9 private readonly IDonorService _donorService\f1\rtlch\lang1037 ;\par
+\par
+    \f2\ltrch\lang9 public DonorController(IDonorService donorService)\f1\rtlch\lang1037\par
+    \{\par
+        _\f2\ltrch\lang9 donorService = donorService\f1\rtlch\lang1037 ;\par
+    \}\par
+\par
+    [\f2\ltrch\lang9 HttpGet\f1\rtlch\lang1037 ]\par
+    \f2\ltrch\lang9 public async Task<IActionResult> GetDonors\f1\rtlch\lang1037 ()\par
+    \{\par
+        \f2\ltrch\lang9 var donors = await _donorService.GetAllDonors\f1\rtlch\lang1037 ();\par
+        \f2\ltrch\lang9 return Ok(donors)\f1\rtlch\lang1037 ;\par
+    \}\par
+\par
+    [\f2\ltrch\lang9 HttpPost\f1\rtlch\lang1037 ]\par
+    \f2\ltrch\lang9 public async Task<IActionResult> AddDonor([FromBody] Donor donor)\f1\rtlch\lang1037\par
+    \{\par
+        \f2\ltrch\lang9 var createdDonor = await _donorService.AddDonor(donor)\f1\rtlch\lang1037 ;\par
+        \f2\ltrch\lang9 return CreatedAtAction(nameof(GetDonors), new \{ id = createdDonor.DonorId \}, createdDonor)\f1\rtlch\lang1037 ;\par
+    \}\par
+\}\par
+```\par
+\par
+#### \f2\ltrch\lang9 2\f1\rtlch\lang1037 . **\f2\ltrch\lang9 Database Structure (Using Entity Framework Core)\f1\rtlch\lang1037 **\par
+\par
+\f2\ltrch\lang9 When you run the application with `code-first` approach, the following migrations will create your database structure\f1\rtlch\lang1037 .\par
+\par
+```\f2\ltrch\lang9 bash\f1\rtlch\lang1037\par
+\f2\ltrch\lang9 dotnet ef migrations add InitialCreate\f1\rtlch\lang1037\par
+\f2\ltrch\lang9 dotnet ef database update\f1\rtlch\lang1037\par
+```\par
+\par
+##### \f2\ltrch\lang9 Example Database Schema\f1\rtlch\lang1037 :\par
+```\f2\ltrch\lang9 sql\f1\rtlch\lang1037\par
+\f2\ltrch\lang9 CREATE TABLE Users\f1\rtlch\lang1037  (\par
+    \f2\ltrch\lang9 UserId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Username NVARCHAR(100) NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 PasswordHash NVARCHAR(100) NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Role NVARCHAR(50) NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Email NVARCHAR(100) NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Phone NVARCHAR(20) NOT NULL\f1\rtlch\lang1037\par
+);\par
+\par
+\f2\ltrch\lang9 CREATE TABLE Donors\f1\rtlch\lang1037  (\par
+    \f2\ltrch\lang9 DonorId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Name NVARCHAR(100) NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Email NVARCHAR(100) NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Phone NVARCHAR(20) NOT NULL\f1\rtlch\lang1037\par
+);\par
+\par
+\f2\ltrch\lang9 CREATE TABLE Donations\f1\rtlch\lang1037  (\par
+    \f2\ltrch\lang9 DonationId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Amount DECIMAL NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Date DATETIME NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 DonorId INT\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 FOREIGN KEY (DonorId) REFERENCES Donors(DonorId)\f1\rtlch\lang1037\par
+);\par
+\par
+\f2\ltrch\lang9 CREATE TABLE Gifts\f1\rtlch\lang1037  (\par
+    \f2\ltrch\lang9 GiftId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Name NVARCHAR(100) NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Category NVARCHAR(50) NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Price DECIMAL NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 DonorId INT\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 FOREIGN KEY (DonorId) REFERENCES Donors(DonorId)\f1\rtlch\lang1037\par
+);\par
+\par
+\f2\ltrch\lang9 CREATE TABLE Purchases\f1\rtlch\lang1037  (\par
+    \f2\ltrch\lang9 PurchaseId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 GiftId INT\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 CustomerId INT\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Date DATETIME NOT NULL\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 FOREIGN KEY (GiftId) REFERENCES Gifts(GiftId)\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 FOREIGN KEY (CustomerId) REFERENCES Users(UserId)\f1\rtlch\lang1037\par
+);\par
+\par
+\f2\ltrch\lang9 CREATE TABLE Lottery\f1\rtlch\lang1037  (\par
+    \f2\ltrch\lang9 LotteryId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 GiftId INT\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 Winner NVARCHAR\f1\rtlch\lang1037 (\f2\ltrch\lang9 100\f1\rtlch\lang1037 ),\par
+    \f2\ltrch\lang9 DrawDate DATETIME\f1\rtlch\lang1037 ,\par
+    \f2\ltrch\lang9 FOREIGN KEY (GiftId) REFERENCES Gifts(GiftId)\f1\rtlch\lang1037\par
+);\par
+```\par
+\par
+#### \f2\ltrch\lang9 3\f1\rtlch\lang1037 . **\f2\ltrch\lang9 Client Side (Angular)\f1\rtlch\lang1037 **\par
+\par
+\f2\ltrch\lang9 1\f1\rtlch\lang1037 . **\f2\ltrch\lang9 Authentication Service\f1\rtlch\lang1037 :**\par
+\par
+```\f2\ltrch\lang9 typescript\f1\rtlch\lang1037\par
+@\f2\ltrch\lang9 Injectable\f1\rtlch\lang1037 (\{\par
+  \f2\ltrch\lang9 providedIn: 'root\f1\rtlch\lang1037 '\par
+\})\par
+\f2\ltrch\lang9 export class AuthService\f1\rtlch\lang1037  \{\par
+  \f2\ltrch\lang9 private apiUrl = '{{\field{\*\fldinst{HYPERLINK https://your-api-url/api/auth/login }}{\fldrslt{https://your-api-url/api/auth/login\ul0\cf0}}}}\f1\rtlch\fs22\lang1037 ';\par
+\par
+  \f2\ltrch\lang9 constructor(private http: HttpClient, private router: Router)\f1\rtlch\lang1037  \{\}\par
+\par
+  \f2\ltrch\lang9 login(username: string, password: string): Observable<any\f1\rtlch\lang1037 > \{\par
+    \f2\ltrch\lang9 return this.http.post<any>(this.apiUrl, \{ username, password \})\f1\rtlch\lang1037 ;\par
+  \}\par
+\par
+  \f2\ltrch\lang9 storeToken(token: string): void\f1\rtlch\lang1037  \{\par
+    \f2\ltrch\lang9 localStorage.setItem('authToken', token)\f1\rtlch\lang1037 ;\par
+  \}\par
+\par
+  \f2\ltrch\lang9 getToken(): string | null\f1\rtlch\lang1037  \{\par
+    \f2\ltrch\lang9 return localStorage.getItem('authToken')\f1\rtlch\lang1037 ;\par
+  \}\par
+\par
+  \f2\ltrch\lang9 isAuthenticated(): boolean\f1\rtlch\lang1037  \{\par
+    \f2\ltrch\lang9 return !!this.getToken\f1\rtlch\lang1037 ();\par
+  \}\par
+\}\par
+```\par
+\par
+\f2\ltrch\lang9 2\f1\rtlch\lang1037 . **\f2\ltrch\lang9 Login Component\f1\rtlch\lang1037 :**\par
+\par
+```\f2\ltrch\lang9 typescript\f1\rtlch\lang1037\par
+@\f2\ltrch\lang9 Component\f1\rtlch\lang1037 (\{\par
+  \f2\ltrch\lang9 selector: 'app-login\f1\rtlch\lang1037 ',\par
+  \f2\ltrch\lang9 templateUrl: './login.component.html\f1\rtlch\lang1037 ',\par
+\})\par
+\f2\ltrch\lang9 export class LoginComponent\f1\rtlch\lang1037  \{\par
+  \f2\ltrch\lang9 username: string\f1\rtlch\lang1037  = '';\par
+  \f2\ltrch\lang9 password: string\f1\rtlch\lang1037  = '';\par
+\par
+  \f2\ltrch\lang9 constructor(private authService: AuthService, private router: Router)\f1\rtlch\lang1037  \{\}\par
+\par
+  \f2\ltrch\lang9 onLogin(): void\f1\rtlch\lang1037  \{\par
+    \f2\ltrch\lang9 this.authService.login(this.username, this.password).subscribe(response\f1\rtlch\lang1037  => \{\par
+      \f2\ltrch\lang9 this.authService.storeToken(response.token)\f1\rtlch\lang1037 ;\par
+      \f2\ltrch\lang9 this.router.navigate(['/home'])\f1\rtlch\lang1037 ;\par
+    \}, \f2\ltrch\lang9 error\f1\rtlch\lang1037  => \{\par
+      \f2\ltrch\lang9 alert('Invalid credentials')\f1\rtlch\lang1037 ;\par
+    \});\par
+  \}\par
+\}\par
+```\par
+\par
+\f2\ltrch\lang9 3\f1\rtlch\lang1037 . **\f2\ltrch\lang9 Displaying Gifts and Purchases\f1\rtlch\lang1037 :**\par
+\par
+```\f2\ltrch\lang9 typescript\f1\rtlch\lang1037\par
+@\f2\ltrch\lang9 Component\f1\rtlch\lang1037 (\{\par
+  \f2\ltrch\lang9 selector: 'app-gift-list\f1\rtlch\lang1037 ',\par
+  \f2\ltrch\lang9 templateUrl: './gift-list.component.html\f1\rtlch\lang1037 '\par
+\})\par
+\f2\ltrch\lang9 export class GiftListComponent implements OnInit\f1\rtlch\lang1037  \{\par
+  \f2\ltrch\lang9 gifts: Gift\par
+\f0\lang1033 ------------------------------------------------------------------------------------------\par
+Apologies for the cutoff! I'll finish up the code for you, provide a clearer overview of how the system works, and give you a complete guide on how everything interacts on the server, client, and database\f1\rtlch\lang1037 .\par
+\par
+### \f0\ltrch\lang1033 3\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Client-Side (Angular) Continued\f1\rtlch\lang1037 **\par
+\par
+\f0\ltrch\lang1033 Now that we've built the authentication part, let's continue with the functionality for showing gifts and handling purchases, including gift lists, adding items to the cart, and displaying winners after the lottery\f1\rtlch\lang1037 .\par
+\par
+#### \f0\ltrch\lang1033 a) **Models for Angular\f1\rtlch\lang1037 **\par
+\par
+\f0\ltrch\lang1033 We define the TypeScript interfaces for the models to match the backend\f1\rtlch\lang1037 :\par
+\par
+```\f0\ltrch\lang1033 typescript\f1\rtlch\lang1037\par
+\f0\ltrch\lang1033 export interface User\f1\rtlch\lang1037  \{\par
+  \f0\ltrch\lang1033 userId: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 username: string\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 role: string\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 email: string\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 phone: string\f1\rtlch\lang1037 ;\par
+\}\par
+\par
+\f0\ltrch\lang1033 export interface Donor\f1\rtlch\lang1037  \{\par
+  \f0\ltrch\lang1033 donorId: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 name: string\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 email: string\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 phone: string\f1\rtlch\lang1037 ;\par
+\}\par
+\par
+\f0\ltrch\lang1033 export interface Gift\f1\rtlch\lang1037  \{\par
+  \f0\ltrch\lang1033 giftId: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 name: string\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 category: string\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 price: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 donorId: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 purchases: Purchase\f1\rtlch\lang1037 [];\par
+\}\par
+\par
+\f0\ltrch\lang1033 export interface Purchase\f1\rtlch\lang1037  \{\par
+  \f0\ltrch\lang1033 purchaseId: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 giftId: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 customerId: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 date: string\f1\rtlch\lang1037 ;\par
+\}\par
+\par
+\f0\ltrch\lang1033 export interface Lottery\f1\rtlch\lang1037  \{\par
+  \f0\ltrch\lang1033 lotteryId: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 giftId: number\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 winner: string\f1\rtlch\lang1037 ;\par
+  \f0\ltrch\lang1033 drawDate: string\f1\rtlch\lang1037 ;\par
+\}\par
+```\par
+\par
+#### \f0\ltrch\lang1033 b) **Gift List Component\f1\rtlch\lang1037 **\par
+\par
+\f0\ltrch\lang1033 This component will display the list of gifts, and customers can view the gift details and add them to their cart\f1\rtlch\lang1037 .\par
+\par
+```\f0\ltrch\lang1033 typescript\f1\rtlch\lang1037\par
+\f0\ltrch\lang1033 import \{ Component, OnInit \} from '@angular/core\f1\rtlch\lang1037 ';\par
+\f0\ltrch\lang1033 import \{ GiftService \} from './gift.service\f1\rtlch\lang1037 ';\par
+\f0\ltrch\lang1033 import \{ Gift \} from './models/gift.model\f1\rtlch\lang1037 ';\par
+\par
+@\f0\ltrch\lang1033 Component\f1\rtlch\lang1037 (\{\par
+  \f0\ltrch\lang1033 selector: 'app-gift-list\f1\rtlch\lang1037 ',\par
+  \f0\ltrch\lang1033 templateUrl: './gift-list.component.html\f1\rtlch\lang1037 ',\par
+  \f0\ltrch\lang1033 styleUrls: ['./gift-list.component.css']\f1\rtlch\lang1037\par
+\})\par
+\f0\ltrch\lang1033 export class GiftListComponent implements OnInit\f1\rtlch\lang1037  \{\par
+  \f0\ltrch\lang1033 gifts: Gift\f1\rtlch\lang1037 [] = [];\par
+\par
+  \f0\ltrch\lang1033 constructor(private giftService: GiftService)\f1\rtlch\lang1037  \{\}\par
+\par
+  \f0\ltrch\lang1033 ngOnInit(): void\f1\rtlch\lang1037  \{\par
+    \f0\ltrch\lang1033 this.giftService.getGifts().subscribe((data: Gift\f1\rtlch\lang1037 []) => \{\par
+      \f0\ltrch\lang1033 this.gifts = data\f1\rtlch\lang1037 ;\par
+    \});\par
+  \}\par
+\par
+  \f0\ltrch\lang1033 addToCart(gift: Gift): void\f1\rtlch\lang1037  \{\par
+    // \f0\ltrch\lang1033 Logic to add gift to the shopping cart\f1\rtlch\lang1037\par
+  \}\par
+\}\par
+```\par
+\par
+#### \f0\ltrch\lang1033 c) **Gift Service (Angular\f1\rtlch\lang1037 )**\par
+\par
+\f0\ltrch\lang1033 The service handles the API calls to fetch gifts and post purchases\f1\rtlch\lang1037 .\par
+\par
+```\f0\ltrch\lang1033 typescript\f1\rtlch\lang1037\par
+\f0\ltrch\lang1033 import \{ Injectable \} from '@angular/core\f1\rtlch\lang1037 ';\par
+\f0\ltrch\lang1033 import \{ HttpClient \} from '@angular/common/http\f1\rtlch\lang1037 ';\par
+\f0\ltrch\lang1033 import \{ Observable \} from 'rxjs\f1\rtlch\lang1037 ';\par
+\f0\ltrch\lang1033 import \{ Gift \} from './models/gift.model\f1\rtlch\lang1037 ';\par
+\par
+@\f0\ltrch\lang1033 Injectable\f1\rtlch\lang1037 (\{\par
+  \f0\ltrch\lang1033 providedIn: 'root\f1\rtlch\lang1037 '\par
+\})\par
+\f0\ltrch\lang1033 export class GiftService\f1\rtlch\lang1037  \{\par
+  \f0\ltrch\lang1033 private apiUrl = '{{\field{\*\fldinst{HYPERLINK https://your-api-url/api/gifts }}{\fldrslt{https://your-api-url/api/gifts\ul0\cf0}}}}\f1\rtlch\fs22\lang1037 ';\par
+\par
+  \f0\ltrch\lang1033 constructor(private http: HttpClient)\f1\rtlch\lang1037  \{\}\par
+\par
+  \f0\ltrch\lang1033 getGifts(): Observable<Gift\f1\rtlch\lang1037 []> \{\par
+    \f0\ltrch\lang1033 return this.http.get<Gift[]>(this.apiUrl)\f1\rtlch\lang1037 ;\par
+  \}\par
+\par
+  \f0\ltrch\lang1033 makePurchase(giftId: number, customerId: number): Observable<any\f1\rtlch\lang1037 > \{\par
+    \f0\ltrch\lang1033 return this.http.post<any>(`$\{this.apiUrl\}/purchase`, \{ giftId, customerId \})\f1\rtlch\lang1037 ;\par
+  \}\par
+\}\par
+```\par
+\par
+#### \f0\ltrch\lang1033 d) **Angular Routing (For Managing Pages\f1\rtlch\lang1037 )**\par
+\par
+\f0\ltrch\lang1033 You will want routes to handle the login, gift display, and other necessary pages\f1\rtlch\lang1037 .\par
+\par
+```\f0\ltrch\lang1033 typescript\f1\rtlch\lang1037\par
+\f0\ltrch\lang1033 const routes: Routes\f1\rtlch\lang1037  = [\par
+  \{ \f0\ltrch\lang1033 path: '', component: GiftListComponent\f1\rtlch\lang1037  \},\par
+  \{ \f0\ltrch\lang1033 path: 'login', component: LoginComponent\f1\rtlch\lang1037  \},\par
+  \{ \f0\ltrch\lang1033 path: 'admin', component: AdminDashboardComponent, canActivate: [AuthGuard]\f1\rtlch\lang1037  \}\par
+];\par
+```\par
+\par
+### \f0\ltrch\lang1033 4\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Admin Dashboard for Lottery (Manager)\f1\rtlch\lang1037 **\par
+\par
+\f0\ltrch\lang1033 Once the manager logs in, they will be able to run the lottery and view the gift winners\f1\rtlch\lang1037 .\par
+\par
+#### \f0\ltrch\lang1033 a) **Admin Dashboard Component\f1\rtlch\lang1037 **\par
+\par
+```\f0\ltrch\lang1033 typescript\f1\rtlch\lang1037\par
+@\f0\ltrch\lang1033 Component\f1\rtlch\lang1037 (\{\par
+  \f0\ltrch\lang1033 selector: 'app-admin-dashboard\f1\rtlch\lang1037 ',\par
+  \f0\ltrch\lang1033 templateUrl: './admin-dashboard.component.html\f1\rtlch\lang1037 ',\par
+  \f0\ltrch\lang1033 styleUrls: ['./admin-dashboard.component.css']\f1\rtlch\lang1037\par
+\})\par
+\f0\ltrch\lang1033 export class AdminDashboardComponent implements OnInit\f1\rtlch\lang1037  \{\par
+  \f0\ltrch\lang1033 lotteries: Lottery\f1\rtlch\lang1037 [] = [];\par
+\par
+  \f0\ltrch\lang1033 constructor(private lotteryService: LotteryService)\f1\rtlch\lang1037  \{\}\par
+\par
+  \f0\ltrch\lang1033 ngOnInit(): void\f1\rtlch\lang1037  \{\par
+    \f0\ltrch\lang1033 this.lotteryService.getAllLotteries().subscribe((data: Lottery\f1\rtlch\lang1037 []) => \{\par
+      \f0\ltrch\lang1033 this.lotteries = data\f1\rtlch\lang1037 ;\par
+    \});\par
+  \}\par
+\par
+  \f0\ltrch\lang1033 drawLottery(giftId: number): void\f1\rtlch\lang1037  \{\par
+    \f0\ltrch\lang1033 this.lotteryService.drawLottery(giftId).subscribe((winner: string\f1\rtlch\lang1037 ) => \{\par
+      \f0\ltrch\lang1033 alert(`Winner: $\{winner\}`)\f1\rtlch\lang1037 ;\par
+      \f0\ltrch\lang1033 this.ngOnInit(); // Refresh the list\f1\rtlch\lang1037\par
+    \});\par
+  \}\par
+\}\par
+```\par
+\par
+#### \f0\ltrch\lang1033 b) **Lottery Service (Angular\f1\rtlch\lang1037 )**\par
+\par
+\f0\ltrch\lang1033 Service to handle lottery draws for the admin\f1\rtlch\lang1037 :\par
+\par
+```\f0\ltrch\lang1033 typescript\f1\rtlch\lang1037\par
+\f0\ltrch\lang1033 import \{ Injectable \} from '@angular/core\f1\rtlch\lang1037 ';\par
+\f0\ltrch\lang1033 import \{ HttpClient \} from '@angular/common/http\f1\rtlch\lang1037 ';\par
+\f0\ltrch\lang1033 import \{ Observable \} from 'rxjs\f1\rtlch\lang1037 ';\par
+\par
+@\f0\ltrch\lang1033 Injectable\f1\rtlch\lang1037 (\{\par
+  \f0\ltrch\lang1033 providedIn: 'root\f1\rtlch\lang1037 '\par
+\})\par
+\f0\ltrch\lang1033 export class LotteryService\f1\rtlch\lang1037  \{\par
+  \f0\ltrch\lang1033 private apiUrl = '{{\field{\*\fldinst{HYPERLINK https://your-api-url/api/lottery }}{\fldrslt{https://your-api-url/api/lottery\ul0\cf0}}}}\f1\rtlch\fs22\lang1037 ';\par
+\par
+  \f0\ltrch\lang1033 constructor(private http: HttpClient)\f1\rtlch\lang1037  \{\}\par
+\par
+  \f0\ltrch\lang1033 getAllLotteries(): Observable<any\f1\rtlch\lang1037 []> \{\par
+    \f0\ltrch\lang1033 return this.http.get<any[]>(this.apiUrl)\f1\rtlch\lang1037 ;\par
+  \}\par
+\par
+  \f0\ltrch\lang1033 drawLottery(giftId: number): Observable<any\f1\rtlch\lang1037 > \{\par
+    \f0\ltrch\lang1033 return this.http.post<any>(`$\{this.apiUrl\}/draw`, \{ giftId \})\f1\rtlch\lang1037 ;\par
+  \}\par
+\}\par
+```\par
+\par
+### \f0\ltrch\lang1033 5\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Database Schema (SQL)\f1\rtlch\lang1037 **\par
+\par
+\f0\ltrch\lang1033 When you run `dotnet ef migrations add InitialCreate` and `dotnet ef database update`, your database will have the following tables\f1\rtlch\lang1037 :\par
+\par
+- **\f0\ltrch\lang1033 Users**: Stores user credentials, roles (manager or customer)\f1\rtlch\lang1037 .\par
+- **\f0\ltrch\lang1033 Donors**: Information about donors\f1\rtlch\lang1037 .\par
+- **\f0\ltrch\lang1033 Donations**: Tracks each donation made by a donor\f1\rtlch\lang1037 .\par
+- **\f0\ltrch\lang1033 Gifts**: Information about each gift available for purchase\f1\rtlch\lang1037 .\par
+- **\f0\ltrch\lang1033 Purchases**: Tracks the purchases made by users\f1\rtlch\lang1037 .\par
+- **\f0\ltrch\lang1033 Lottery**: Contains information about lottery winners for each gift\f1\rtlch\lang1037 .\par
+\par
+```\f0\ltrch\lang1033 sql\f1\rtlch\lang1037\par
+\f0\ltrch\lang1033 CREATE TABLE Users\f1\rtlch\lang1037  (\par
+    \f0\ltrch\lang1033 UserId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 Username NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 100\f1\rtlch\lang1037 ),\par
+    \f0\ltrch\lang1033 PasswordHash NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 255\f1\rtlch\lang1037 ),\par
+    \f0\ltrch\lang1033 Role NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 50\f1\rtlch\lang1037 ),\par
+    \f0\ltrch\lang1033 Email NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 100\f1\rtlch\lang1037 ),\par
+    \f0\ltrch\lang1033 Phone NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 50\f1\rtlch\lang1037 )\par
+);\par
+\par
+\f0\ltrch\lang1033 CREATE TABLE Donors\f1\rtlch\lang1037  (\par
+    \f0\ltrch\lang1033 DonorId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 Name NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 100\f1\rtlch\lang1037 ),\par
+    \f0\ltrch\lang1033 Email NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 100\f1\rtlch\lang1037 ),\par
+    \f0\ltrch\lang1033 Phone NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 50\f1\rtlch\lang1037 )\par
+);\par
+\par
+\f0\ltrch\lang1033 CREATE TABLE Donations\f1\rtlch\lang1037  (\par
+    \f0\ltrch\lang1033 DonationId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 Amount DECIMAL\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 Date DATETIME\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 DonorId INT\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 FOREIGN KEY (DonorId) REFERENCES Donors(DonorId)\f1\rtlch\lang1037\par
+);\par
+\par
+\f0\ltrch\lang1033 CREATE TABLE Gifts\f1\rtlch\lang1037  (\par
+    \f0\ltrch\lang1033 GiftId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 Name NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 100\f1\rtlch\lang1037 ),\par
+    \f0\ltrch\lang1033 Category NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 50\f1\rtlch\lang1037 ),\par
+    \f0\ltrch\lang1033 Price DECIMAL\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 DonorId INT\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 FOREIGN KEY (DonorId) REFERENCES Donors(DonorId)\f1\rtlch\lang1037\par
+);\par
+\par
+\f0\ltrch\lang1033 CREATE TABLE Purchases\f1\rtlch\lang1037  (\par
+    \f0\ltrch\lang1033 PurchaseId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 GiftId INT\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 CustomerId INT\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 Date DATETIME\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 FOREIGN KEY (GiftId) REFERENCES Gifts(GiftId)\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 FOREIGN KEY (CustomerId) REFERENCES Users(UserId)\f1\rtlch\lang1037\par
+);\par
+\par
+\f0\ltrch\lang1033 CREATE TABLE Lottery\f1\rtlch\lang1037  (\par
+    \f0\ltrch\lang1033 LotteryId INT PRIMARY KEY\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 GiftId INT\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 Winner NVARCHAR\f1\rtlch\lang1037 (\f0\ltrch\lang1033 100\f1\rtlch\lang1037 ),\par
+    \f0\ltrch\lang1033 DrawDate DATETIME\f1\rtlch\lang1037 ,\par
+    \f0\ltrch\lang1033 FOREIGN KEY (GiftId) REFERENCES Gifts(GiftId)\f1\rtlch\lang1037\par
+);\par
+```\par
+\par
+### \f0\ltrch\lang1033 6\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 What the User Sees\f1\rtlch\lang1037 **\par
+\par
+#### \f0\ltrch\lang1033 a) **When a Customer (Client) Opens the Site\f1\rtlch\lang1037 **\par
+\par
+\f0\ltrch\lang1033 1\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Login Page\f1\rtlch\lang1037 **: \par
+   - \f0\ltrch\lang1033 The first screen the customer sees will be a login page if they are not logged in\f1\rtlch\lang1037 .\par
+   - \f0\ltrch\lang1033 The login form asks for `Username` and `Password`. After logging in, they are redirected to the gift list page\f1\rtlch\lang1037 .\par
+\par
+\f0\ltrch\lang1033 2\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Gift List Page\f1\rtlch\lang1037 **:\par
+   - \f0\ltrch\lang1033 After logging in, they are shown a list of available gifts. Each gift has the following properties: Name, Category, Price\f1\rtlch\lang1037 .\par
+   - \f0\ltrch\lang1033 There will be an "Add to Cart" button next to each gift\f1\rtlch\lang1037 .\par
+   - \f0\ltrch\lang1033 Customers can select multiple gifts to add to their cart, and once they're done, they can proceed to purchase\f1\rtlch\lang1037 .\par
+\par
+\f0\ltrch\lang1033 3\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Purchase Page\f1\rtlch\lang1037 **:\par
+   - \f0\ltrch\lang1033 When the customer clicks to buy a gift, the backend checks if the gift is still available and not already purchased\f1\rtlch\lang1037 .\par
+   - \f0\ltrch\lang1033 If available, the purchase is processed, and the customer gets a confirmation\f1\rtlch\lang1037 .\par
+\par
+\f0\ltrch\lang1033 4\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Lottery Results\f1\rtlch\lang1037 **:\par
+   - \f0\ltrch\lang1033 After the lottery has been drawn by the admin, customers can see the winner for each gift. This is displayed on the gift list page as soon as the lottery is over\f1\rtlch\lang1037 .\par
+\par
+#### \f0\ltrch\lang1033 b) **When an Admin Opens the Site\f1\rtlch\lang1037 **\par
+\par
+\f0\ltrch\lang1033 1\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Login Page\f1\rtlch\lang1037 **: \par
+   - \f0\ltrch\lang1033 The admin can log in through the same login page but will have a role of "manager\f1\rtlch\lang1037 ."\par
+   \par
+\f0\ltrch\lang1033 2\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Admin Dashboard\f1\rtlch\lang1037 **:\par
+   - \f0\ltrch\lang1033 The admin is redirected to the admin dashboard where they can see all gifts and their associated lotteries\f1\rtlch\lang1037 .\par
+   - \f0\ltrch\lang1033 The admin has options to manually trigger the lottery for each gift and view the winners of previous lotteries\f1\rtlch\lang1037 .\par
+   \par
+### \f0\ltrch\lang1033 7\f1\rtlch\lang1037 . **\f0\ltrch\lang1033 Final Remarks\f1\rtlch\lang1037 **\par
+\par
+\f0\ltrch\lang1033 This setup covers the core functionality for managing a raffle (mimicking the "Chinese auction" or "mystery gift raffle") with two distinct user roles, customers and admins. Here's what we have\f1\rtlch\lang1037 :\par
+\par
+- **\f0\ltrch\lang1033 Backend**: .NET Core Web API with JWT authentication, role-based access control, and full CRUD operations for managing donors, gifts, purchases, and lotteries\f1\rtlch\lang1037 .\par
+- **\f0\ltrch\lang1033 Frontend**: Angular app with services for interacting with the API, displaying gift lists, handling cart functionality, and showing lottery results\f1\rtlch\lang1037 .\par
+- **\f0\ltrch\lang1033 Database**: SQL Server (or any relational database) structured to store user, donor, gift, purchase, and lottery data\f1\rtlch\lang1037 .\par
+\par
+\f0\ltrch\lang1033 By using a layered architecture and separating concerns (API, service, repository, etc.), this system is easy to maintain and expand in the future\f1\rtlch\lang1037 .\par
+\par
+\f0\ltrch\lang1033 If you have any more specific questions or need more details, feel free to ask\par
+-------------------------------------------------------------------------------\f1\rtlch\lang1037 !\par
+[\f0\ltrch\lang1033 Url(ErrorMessage = "Invalid URL format")\f1\rtlch\lang1037 ]\par
+    \f0\ltrch\lang1033 public string ImageUrl \{ get; set; \} // Optional, hence no 'Required' attribute\lang9\par
+}
+ 
